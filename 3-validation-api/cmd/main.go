@@ -2,32 +2,27 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
+	"validation/internal/verify"
 
 	"validation/config"
-	"validation/internal/verify"
 )
 
 func main() {
-	cfg, err := config.NewConfig()
-	if err != nil {
-		log.Fatal("Failed to load config:", err)
-	}
 
 	router := http.NewServeMux()
-	verifyHandler := verify.NewHandler(cfg)
 
-	router.HandleFunc("/send", verifyHandler.SendVerificationRequest)
-	router.HandleFunc("/verify/", verifyHandler.VerifyEmail)
+	cfg := config.Load()
 
-	server := &http.Server{
-		Addr:    cfg.ServerAddress,
+	verify.NewVerifyHandler(router, cfg)
+
+	server := http.Server{
+		Addr:    ":8081",
 		Handler: router,
 	}
 
-	fmt.Printf("Server started at http://%s\n", cfg.ServerAddress)
+	fmt.Println("Server started at http://localhost:8081")
 	if err := server.ListenAndServe(); err != nil {
-		log.Fatal("Server failed:", err)
+		fmt.Printf("Server error: %v\n", err)
 	}
 }
