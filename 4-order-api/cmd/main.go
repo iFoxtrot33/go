@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"order-api/configs"
+	"order-api/internal/product"
 
 	"net/http"
 	"order-api/pkg/db"
@@ -11,9 +12,15 @@ import (
 func main() {
 	conf := configs.LoadConfig()
 
-	_ = db.NewDb(conf)
+	database := db.NewDb(conf)
 
 	router := http.NewServeMux()
+
+	productRepository := product.NewProductRepository(database)
+
+	product.NewOrderHandler(router, product.ProductHandlerDeps{
+		ProductRepository: productRepository,
+	})
 
 	server := http.Server{
 		Addr:    ":8081",

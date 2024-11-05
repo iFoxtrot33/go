@@ -7,6 +7,6 @@ services:
       POSTGRES_PASSWORD: my_pass
       PGDATA: /data/postgress
     volumes:
-      - ./postgres-data:/data/postgress
+      - ./postgres-data:/data/postgres
     ports:
       - "5432:5432"
