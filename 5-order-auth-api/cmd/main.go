@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"order-api/configs"
 	"order-api/internal/auth"
 	"order-api/internal/product"
@@ -10,6 +9,8 @@ import (
 
 	"net/http"
 	"order-api/pkg/db"
+
+	"github.com/sirupsen/logrus"
 )
 
 func main() {
@@ -43,6 +44,8 @@ func main() {
 		Handler: stack(router),
 	}
 
-	fmt.Println("Server started at http://localhost:8081")
-	server.ListenAndServe()
+	logrus.Info("Server starting at http://localhost:8081")
+	if err := server.ListenAndServe(); err != nil {
+		logrus.Fatalf("Server failed to start: %v", err)
+	}
 }

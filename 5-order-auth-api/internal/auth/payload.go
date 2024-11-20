@@ -19,5 +19,5 @@ type AuthRequest struct {
 }
 
 type AuthResponse struct {
-	Token string `json:"token"`
+	Token string `json:"token" gorm:"uniqueIndex;type:varchar(255);not null"`
 }

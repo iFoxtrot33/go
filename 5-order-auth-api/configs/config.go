@@ -23,9 +23,15 @@ type AuthConfig struct {
 func LoadConfig() *Config {
 	err := godotenv.Load()
 
-	if err != nil {
-		log.Println("Error loading .env file")
+	if _, err := os.Stat(".env"); os.IsNotExist(err) {
+		log.Fatal(".env file does not exist")
 	}
+
+	if err != nil {
+		log.Printf("error loading .env file: %v", err)
+		return nil
+	}
+
 	return &Config{
 		Db: DbConfig{
 			Dsn: os.Getenv("DSN"),

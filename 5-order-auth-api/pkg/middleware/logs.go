@@ -9,6 +9,8 @@ import (
 
 func Logging(next http.Handler) http.Handler {
 
+	logrus.SetLevel(logrus.InfoLevel)
+
 	logrus.SetFormatter(&logrus.JSONFormatter{
 		TimestampFormat: time.RFC3339,
 		FieldMap: logrus.FieldMap{

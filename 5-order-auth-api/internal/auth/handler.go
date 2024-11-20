@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"log"
 	"net/http"
 	"order-api/configs"
 	"order-api/pkg/jwt"
@@ -33,8 +34,9 @@ func NewAuthHandler(router *http.ServeMux, deps AuthHandlerDeps) {
 func (handler *AuthHandler) Login() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		body, err := req.HandleBody[LoginRequest](&w, r)
+		body, err := req.HandleBody[LoginRequest](w, r)
 		if err != nil {
+			log.Println(err)
 			return
 		}
 
@@ -42,6 +44,7 @@ func (handler *AuthHandler) Login() http.HandlerFunc {
 
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusUnauthorized)
+			log.Println(err)
 			return
 		}
 
@@ -55,9 +58,10 @@ func (handler *AuthHandler) Login() http.HandlerFunc {
 func (handler *AuthHandler) Register() http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		body, err := req.HandleBody[RegisterRequest](&w, r)
+		body, err := req.HandleBody[RegisterRequest](w, r)
 
 		if err != nil {
+			log.Println(err)
 			return
 		}
 
@@ -65,6 +69,7 @@ func (handler *AuthHandler) Register() http.HandlerFunc {
 
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusUnauthorized)
+			log.Println(err)
 			return
 		}
 
@@ -80,7 +85,7 @@ func (handler *AuthHandler) Register() http.HandlerFunc {
 func (handler *AuthHandler) Session() http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		body, err := req.HandleBody[AuthRequest](&w, r)
+		body, err := req.HandleBody[AuthRequest](w, r)
 
 		if err != nil {
 			return
@@ -97,6 +102,7 @@ func (handler *AuthHandler) Session() http.HandlerFunc {
 
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Println(err)
 			return
 		}
 

@@ -1,7 +1,7 @@
 package product
 
 import (
-	"math/rand"
+	// "crypto/rand"
 
 	"github.com/lib/pq"
 	"gorm.io/gorm"
@@ -24,12 +24,16 @@ func NewProduct(req *ProductCreateRequest) *Product {
 	}
 }
 
-var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890")
+//TODO: Move to tests
 
-func RandStringRunes(n int) string {
-	b := make([]rune, n)
-	for i := range b {
-		b[i] = letterRunes[rand.Intn(len(letterRunes))]
-	}
-	return string(b)
-}
+// var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890")
+
+// func RandStringRunes(n int) string {
+// 	b := make([]rune, n)
+// 	max := big.NewInt(int64(len(letterRunes)))
+// 	for i := range b {
+// 		randIndex, _ := rand.Int(rand.Reader, max)
+// 		b[i] = letterRunes[randIndex.Int64()]
+// 	}
+// 	return string(b)
+// }

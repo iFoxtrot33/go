@@ -1,6 +1,7 @@
 package db
 
 import (
+	"log"
 	"order-api/configs"
 
 	"gorm.io/driver/postgres"
@@ -14,7 +15,8 @@ type Db struct {
 func NewDb(conf *configs.Config) *Db {
 	db, err := gorm.Open(postgres.Open(conf.Db.Dsn), &gorm.Config{})
 	if err != nil {
-		panic(err)
+		log.Fatalf("failed to connect to database: %v", err)
+		return nil
 	}
 	return &Db{db}
 }

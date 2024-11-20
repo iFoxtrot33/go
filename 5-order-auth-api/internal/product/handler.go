@@ -1,6 +1,7 @@
 package product
 
 import (
+	"log"
 	"net/http"
 	"order-api/pkg/req"
 	"order-api/pkg/res"
@@ -31,7 +32,7 @@ func NewOrderHandler(router *http.ServeMux, deps ProductHandlerDeps) {
 
 func (handler *ProductHandler) Create() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		body, err := req.HandleBody[ProductCreateRequest](&w, r)
+		body, err := req.HandleBody[ProductCreateRequest](w, r)
 
 		if err != nil {
 			return
@@ -49,23 +50,16 @@ func (handler *ProductHandler) Create() http.HandlerFunc {
 
 func (handler *ProductHandler) Update() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		body, err := req.HandleBody[ProductCreateRequest](&w, r)
+		body, err := req.HandleBody[ProductCreateRequest](w, r)
 
 		if err != nil {
 			return
 		}
 
-		idString := r.PathValue("id")
-
-		if idString == "" {
-			http.Error(w, "no id", http.StatusBadRequest)
-			return
-		}
-
-		id, err := strconv.ParseUint(idString, 10, 32)
-
+		id, err := strconv.ParseUint(r.PathValue("id"), 10, 32)
 		if err != nil {
 			http.Error(w, "invalid id format", http.StatusBadRequest)
+			log.Printf("error parsing id: %v", err)
 			return
 		}
 
@@ -88,8 +82,8 @@ func (handler *ProductHandler) Update() http.HandlerFunc {
 
 func (handler *ProductHandler) Delete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		idString := r.PathValue("id")
-		id, err := strconv.ParseUint(idString, 10, 32)
+		id, err := strconv.ParseUint(r.PathValue("id"), 10, 32)
+
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
