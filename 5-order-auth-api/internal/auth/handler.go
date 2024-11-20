@@ -1,0 +1,113 @@
+package auth
+
+import (
+	"log"
+	"net/http"
+	"order-api/configs"
+	"order-api/pkg/jwt"
+	"order-api/pkg/middleware"
+	"order-api/pkg/req"
+	"order-api/pkg/res"
+)
+
+type AuthHandlerDeps struct {
+	*configs.Config
+	*AuthService
+}
+
+type AuthHandler struct {
+	*configs.Config
+	*AuthService
+}
+
+func NewAuthHandler(router *http.ServeMux, deps AuthHandlerDeps) {
+	handler := &AuthHandler{
+		Config:      deps.Config,
+		AuthService: deps.AuthService,
+	}
+	router.HandleFunc("POST /auth/login", handler.Login())
+	router.HandleFunc("POST /auth/register", handler.Register())
+
+	router.Handle("POST /auth/session", middleware.TokenMiddleware(deps.Config.Auth.Secret)(http.HandlerFunc(handler.Session())))
+}
+
+func (handler *AuthHandler) Login() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		body, err := req.HandleBody[LoginRequest](w, r)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		sessionId, err := handler.AuthService.Login(body.Phone)
+
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusUnauthorized)
+			log.Println(err)
+			return
+		}
+
+		data := RegisterAndLoginResponse{
+			SessionId: sessionId,
+		}
+		res.Json(w, data, 200)
+	}
+}
+
+func (handler *AuthHandler) Register() http.HandlerFunc {
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		body, err := req.HandleBody[RegisterRequest](w, r)
+
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		sessionId, err := handler.AuthService.Register(body.Phone, body.Name)
+
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusUnauthorized)
+			log.Println(err)
+			return
+		}
+
+		data := RegisterAndLoginResponse{
+			SessionId: sessionId,
+		}
+
+		res.Json(w, data, 200)
+
+	}
+}
+
+func (handler *AuthHandler) Session() http.HandlerFunc {
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		body, err := req.HandleBody[AuthRequest](w, r)
+
+		if err != nil {
+			return
+		}
+
+		existedUser, _ := handler.UserRepository.FindBySessionId(body.SessionId)
+
+		if existedUser == nil {
+			http.Error(w, WrongCredentials, http.StatusUnauthorized)
+			return
+		}
+
+		token, err := jwt.NewJWT(handler.Config.Auth.Secret).Create(existedUser.Name, existedUser.Phone)
+
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Println(err)
+			return
+		}
+
+		res.Json(w, AuthResponse{
+			Token: token,
+		}, http.StatusOK)
+	}
+}
