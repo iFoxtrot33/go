@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 
+	"order-api/internal/order"
 	"order-api/internal/product"
 	"order-api/internal/user"
 
@@ -22,5 +23,5 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	db.AutoMigrate(&product.Product{}, &user.User{})
+	db.AutoMigrate(&product.Product{}, &user.User{}, &order.Order{}, &order.OrderProduct{})
 }

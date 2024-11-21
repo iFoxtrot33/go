@@ -3,6 +3,7 @@ package main
 import (
 	"order-api/configs"
 	"order-api/internal/auth"
+	"order-api/internal/order"
 	"order-api/internal/product"
 	"order-api/internal/user"
 	"order-api/pkg/middleware"
@@ -22,10 +23,11 @@ func main() {
 
 	productRepository := product.NewProductRepository(database)
 	userRepository := user.NewUserRepository(database)
+	orderRepository := order.NewOrderRepository(database)
 
 	authService := auth.NewAuthService(userRepository)
 
-	product.NewOrderHandler(router, product.ProductHandlerDeps{
+	product.NewProductHandler(router, product.ProductHandlerDeps{
 		ProductRepository: productRepository,
 	})
 
@@ -35,9 +37,14 @@ func main() {
 	})
 
 	stack := middleware.Chain(
-
 		middleware.Logging,
+		middleware.TokenMiddleware(conf.Auth.Secret),
 	)
+
+	order.NewOrderHandler(router, order.OrderHandlerDeps{
+		OrderRepository: orderRepository,
+		Config:          conf,
+	})
 
 	server := http.Server{
 		Addr:    ":8081",

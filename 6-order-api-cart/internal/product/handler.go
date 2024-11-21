@@ -18,7 +18,7 @@ type ProductHandler struct {
 	ProductRepository *ProductRepository
 }
 
-func NewOrderHandler(router *http.ServeMux, deps ProductHandlerDeps) {
+func NewProductHandler(router *http.ServeMux, deps ProductHandlerDeps) {
 	handler := &ProductHandler{
 		ProductRepository: deps.ProductRepository,
 	}

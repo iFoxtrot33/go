@@ -1,10 +1,12 @@
 package user
 
-import "gorm.io/gorm"
+import (
+	"gorm.io/gorm"
+)
 
 type User struct {
 	gorm.Model
-	Phone     string `gorm:"index"`
+	Phone     string `json:"phone" gorm:"unique"`
 	Name      string
 	SessionId string `gorm:"column:session_id"`
 }
