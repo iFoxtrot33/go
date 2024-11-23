@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"order-api/configs"
 	"order-api/pkg/jwt"
-	"order-api/pkg/middleware"
 	"order-api/pkg/req"
 	"order-api/pkg/res"
 )
@@ -28,7 +27,7 @@ func NewAuthHandler(router *http.ServeMux, deps AuthHandlerDeps) {
 	router.HandleFunc("POST /auth/login", handler.Login())
 	router.HandleFunc("POST /auth/register", handler.Register())
 
-	router.Handle("POST /auth/session", middleware.TokenMiddleware(deps.Config.Auth.Secret)(http.HandlerFunc(handler.Session())))
+	router.Handle("POST /auth/session", handler.Session())
 }
 
 func (handler *AuthHandler) Login() http.HandlerFunc {

@@ -4,3 +4,5 @@
 /5-order-auth-api/.env
 /6-order-api-cart/postgres-data
 /6-order-api-cart/.env
+/6-order-api-cart/cmd/.env
+/6-order-api-cart/pkg/test/.env

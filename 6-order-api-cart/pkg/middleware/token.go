@@ -32,7 +32,7 @@ func TokenMiddleware(secret string) func(http.Handler) http.Handler {
 
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if r.URL.Path == "/auth/login" || r.URL.Path == "/auth/register" {
+			if r.URL.Path == "/auth/login" || r.URL.Path == "/auth/register" || r.URL.Path == "/auth/session" {
 				next.ServeHTTP(w, r)
 				return
 			}
